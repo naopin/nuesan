@@ -21,7 +21,7 @@
           <h3>ユーザー名</h3>
           <h4>{{displayUsers.username}}</h4>
           <input type="text" :value="displayUsers.username" @input="userNameModify" />
-          <button @click="saveUserName(displayUsers)">変更</button>
+          <button @click="saveUserName()">変更</button>
 
           <h3>メールアドレス</h3>
           <h4>{{displayUsers.email}}</h4>
@@ -58,9 +58,11 @@ export default {
     };
   },
 created() {
+  const self = this
     this.$nextTick(function () {
-      const self = this;
-      const copyUsre = firebase.auth().currentUser;
+      //データベースに保管されているユーザー
+      self.db = firebase.firestore();
+      self.usersRef = self.db.collection("users");
       //ログインユーザーを参照
       firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -68,31 +70,29 @@ created() {
           self.dbUsers = self.usersRef.where(
             "uid",
             "==",
-            copyUsre.uid
+            self.currentUserReference.uid
           );
-      
           self.dbUsers.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-              self.displayUsers = doc.data();
+              // ok
+                  self.displayUsers = doc.data()
             });
           });
         } else {
           console.log("ログインユーザーを参照できていません");
         }
-           //データベースに保管されているユーザー
-        self.db = firebase.firestore();
-        self.usersRef = self.db.collection("users");
         self.usersRef.onSnapshot((snapshot) => {
         snapshot.docs.forEach(() => {
             if (user) {
               self.dbUsers = self.usersRef.where(
                 "uid",
                 "==",
-                copyUsre.uid
+                self.currentUserReference.uid
               );
               self.dbUsers.get().then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                  self.displayUsers = doc.data();
+                  // ok
+                  self.displayUsers = doc.data()
                 });
               });
             }
@@ -110,17 +110,15 @@ created() {
       this.editProfile = false;
       this.currentUserInformation = true;
     },
-
     //変更されたユーザー名を取得
     userNameModify(e) {
-      // console.log(e.target.value);
       this.userName = e.target.value;
     },
     //Firestoreのユーザー名を変更
-    saveUserName(displayUsers) {
+    saveUserName() {
       if (this.userName) {
-        this.usersRef
-          .doc(displayUsers.uid)
+        firebase.firestore().collection("users")
+          .doc(this.displayUsers.uid)
           .update({ username: this.userName })
           .then(() => {
             firebase
@@ -149,7 +147,6 @@ created() {
 
     //変更されたメールアドレスを取得
     emailModify(e) {
-      console.log(e.target.value);
       this.newMail = e.target.value;
     },
     //firebaseのメールを更新
