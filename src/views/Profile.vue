@@ -8,10 +8,17 @@
 
       <div class="movie_history">
         <h1 class="movie_history_title">投稿履歴</h1>
-        <div class="childItems" v-for="item in allHistoryMovie" :key="item.snippet.title">
+        <div
+          class="childItems"
+          v-for="item in allHistoryMovie"
+          :key="item.snippet.title"
+        >
           <div class="history_cards">
-            <img class="thumbnails" v-bind:src="item.snippet.thumbnails.medium.url" />
-            <h2>{{item.snippet.title}}</h2>
+            <img
+              class="thumbnails"
+              v-bind:src="item.snippet.thumbnails.medium.url"
+            />
+            <h2>{{ item.snippet.title }}</h2>
           </div>
           <button @click="deleteBtn(item)">削除</button>
         </div>
@@ -32,39 +39,40 @@ export default {
   components: { Header, ProfileModify },
   data() {
     return {
-      allHistoryMovie: []
+      allHistoryMovie: [],
     };
   },
- created() {
+  created() {
     this.$nextTick(function() {
       const self = this;
       firebaseApp
         .firestore()
         .collection("shares")
-        .onSnapshot(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            self.allHistoryMovie.push(doc.data());
+        .onSnapshot((querySnapshot) => {
+          let videos = [];
+          querySnapshot.forEach((doc) => {
+            videos = [...videos, doc.data()];
           });
-          console.log("query",self.allHistoryMovie);
+          self.allHistoryMovie = videos;
+          console.log("query", self.allHistoryMovie);
         });
     });
   },
   methods: {
     deleteBtn(value) {
-       firebase
+      firebase
         .firestore()
         .collection("shares")
         .doc(value.snippet.movieId)
         .delete()
         .then(() => {
-          console.log("履歴",this.allHistoryMovie);
-
+          console.log("履歴", this.allHistoryMovie);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error removing document: ", error);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
