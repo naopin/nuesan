@@ -5,6 +5,7 @@
       <!-- Javascript -->
       <transition name="fade">
         <div v-if="value == 'JavascriptValue'">
+          <!-- モーダル -->
           <MyModal @close="javascriptCloseModal()" v-if="jsModal">
             <div class="frames">
               <iframe width="100%" height="100%" :src="jsIframe"></iframe>
@@ -23,6 +24,7 @@
       <!-- vue.js -->
       <transition name="fade">
         <div v-if="value == 'VueValue'">
+          <!-- モーダル -->
           <MyModal @close="vueCloseModal()" v-if="vueModal">
             <div class="frames">
               <iframe width="100%" height="100%" :src="vueIframe"></iframe>

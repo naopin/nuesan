@@ -6,13 +6,16 @@
           <p class="navbar_log">Shares</p>
           <ul>
             <li>
+              <router-link to="/">HOME</router-link>
+            </li>
+            <li>
               <router-link to="/share">SHARE</router-link>
             </li>
-              <li>
+            <li>
               <router-link to="/profile">PROFILE</router-link>
             </li>
             <li>
-               <button class="signoutbutton" @click="logout">SIGNOUT</button>
+              <button class="signoutbutton" @click="logout">SIGNOUT</button>
             </li>
           </ul>
         </div>
@@ -30,24 +33,23 @@ export default {
   // components: {SelctMenu},
   name: "Header",
   methods: {
-      logout: function() {
+    logout: function() {
       firebase
         .auth()
         .signOut()
         .then(() => {
-        //   this.$router.push("/");
+          //   this.$router.push("/");
         })
         .catch(error => {
           alert(error.message);
         });
-    },
+    }
   },
   created() {
     this.$nextTick(function() {
-      firebase.auth().onAuthStateChanged((user)=> {
+      firebase.auth().onAuthStateChanged(user => {
         if (user) {
           console.log("ログイン中", user);
-        
         } else {
           console.log("ログインアウト中");
         }
@@ -85,7 +87,8 @@ li {
   background: transparent;
 }
 
-a:hover, .signoutbutton:hover {
+a:hover,
+.signoutbutton:hover {
   color: rgb(160, 160, 160);
 }
 
@@ -96,5 +99,4 @@ a:hover, .signoutbutton:hover {
   padding: 1rem;
   text-shadow: 2px 2px 3px #acabab;
 }
-
 </style>

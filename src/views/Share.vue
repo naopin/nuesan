@@ -1,74 +1,76 @@
 <template>
-  <div class="share">
-      <router-link to="/">HOME</router-link>
-    <div>
-      <h1>動画検索</h1>
-    </div>
-    <br />
-    <input placeholder="キーワードを入力してください" v-model="keyword" />
-    <button @click="search_video">検索</button>
-   
-    <div v-show="results">
-      <iframe
-        width="560"
-        height="315"
-        :src="resultVideo"
-        frameborder="0"
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      >></iframe>
-      <table>
-        <tr>
-          <th>
-            <font>No</font>
-          </th>
-          <th>
-            <font>Video</font>
-          </th>
-          <th>
-            <font>Contents</font>
-          </th>
-        </tr>
+  <div id="share">
+    <Header></Header>
+    <div class="share">
+      <div>
+        <h1>動画検索</h1>
+      </div>
+      <br />
+      <input placeholder="キーワードを入力してください" v-model="keyword" />
+      <button @click="search_video">検索</button>
 
-        <tr v-for="(movie, index) in results" v-bind:key="movie.id.videoId">
-          <!-- No -->
-          <td>{{ index + 1 }}</td>
-          <!-- Video -->
-          <td @click="click(movie)">
-            <img v-bind:src="movie.snippet.thumbnails.medium.url" />
-          </td>
-          <!-- titleとdescription -->
-          <td>
-            <font>
-              <b>{{ movie.snippet.title }}</b>
-            </font>
-            <br />
-            {{ movie.snippet.description}}
-          </td>
-        </tr>
-      </table>
-    </div>
+      <div v-show="results">
+        <iframe
+          width="560"
+          height="315"
+          :src="resultVideo"
+          frameborder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        >></iframe>
+        <table>
+          <tr>
+            <th>
+              <font>No</font>
+            </th>
+            <th>
+              <font>Video</font>
+            </th>
+            <th>
+              <font>Contents</font>
+            </th>
+          </tr>
 
-    <div class="selectmovie">
-      <div class="recommend">
-        <div>
-          <h3>投稿する動画</h3>
-          <div class="category">
-            <h3>言語</h3>
-            <select v-model="choice" @change="selectCategory">
-              <option v-for="catregory in categories" :key="catregory.name">{{catregory.name}}</option>
-            </select>
+          <tr v-for="(movie, index) in results" v-bind:key="movie.id.videoId">
+            <!-- No -->
+            <td>{{ index + 1 }}</td>
+            <!-- Video -->
+            <td @click="click(movie)">
+              <img v-bind:src="movie.snippet.thumbnails.medium.url" />
+            </td>
+            <!-- titleとdescription -->
+            <td>
+              <font>
+                <b>{{ movie.snippet.title }}</b>
+              </font>
+              <br />
+              {{ movie.snippet.description}}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="selectmovie">
+        <div class="recommend">
+          <div>
+            <h3>投稿する動画</h3>
+            <div class="category">
+              <h3>言語</h3>
+              <select v-model="choice" @change="selectCategory">
+                <option v-for="catregory in categories" :key="catregory.name">{{catregory.name}}</option>
+              </select>
+            </div>
+            <div class="contents">
+              <h3>コンテンツ</h3>
+              <select>
+                <option>動画</option>
+                <option value>記事</option>
+              </select>
+            </div>
+            <h4>{{selectMovieTitle}}</h4>
           </div>
-          <div class="contents">
-            <h3>コンテンツ</h3>
-            <select >
-              <option>動画</option>
-              <option value="">記事</option>
-            </select>
-          </div>
-          <h4>{{selectMovieTitle}}</h4>
+          <button @click="share()">投稿</button>
         </div>
-        <button @click="share()">投稿</button>
       </div>
     </div>
   </div>
@@ -76,14 +78,14 @@
 
 <script>
 import axios from "axios";
-
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import Header from "../components/HeaderSignIn";
 
 export default {
-  name: "SearchVideo",
-  data: function() {
+  components: { Header },
+  data() {
     return {
       categories: [
         { name: "Javascript" },
@@ -93,8 +95,8 @@ export default {
         { name: "Node.js" },
         { name: "Other" }
       ],
-      choice:"",
-      selctedCategory:"",
+      choice: "",
+      selctedCategory: "",
       movieItems: "",
       selectMovieTitle: "",
       selectMovieUrl: "",
@@ -152,11 +154,12 @@ export default {
           sharesRef
             .doc(self.movieItems.id.videoId)
             .set({
-              category:self.selctedCategory,
+              category: self.selctedCategory,
               snippet: {
                 title: self.movieItems.snippet.title,
                 description: self.movieItems.snippet.description,
-                url:`https://www.youtube.com/embed/${self.movieItems.id.videoId}`,
+                url: `https://www.youtube.com/embed/${self.movieItems.id.videoId}`,
+                movieId: self.movieItems.id.videoId,
                 thumbnails: {
                   medium: {
                     url: self.movieItems.snippet.thumbnails.medium.url
@@ -178,9 +181,7 @@ export default {
       // console.log(this.selctedCategory);
     }
   },
-  click() {
-    
-  }
+  click() {}
 };
 </script>
 

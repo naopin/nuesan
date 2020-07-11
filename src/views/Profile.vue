@@ -1,168 +1,67 @@
 <template>
   <div id="profile">
-    <!-- <Header></Header> -->
-    <div class="profile_modifies">
-      <div class="profile_title">
-        <h1>ユーザー情報の編集</h1>
-      </div>
+    <Header></Header>
+    <div class="profile">
       <div class="profile_modify">
-        <div class="current_user_information" v-if="currentUserInformation">
-          <div class="user_name">
-            <h3>ユーザー名</h3>
-            <h4>{{displayUsers.username}}</h4>
-          </div>
-          <div class="user_email">
-            <h3>メールアドレス</h3>
-            <h4>{{displayUsers.email}}</h4>
-          </div>
-          <button @click="profilelModify()">プロフィール変更</button>
-        </div>
-        <div class="edit_profile" v-if="editProfile">
-          <h3>ユーザー名</h3>
-          <h4>{{displayUsers.username}}</h4>
-          <input type="text" :value="displayUsers.username" @input="userNameModify" />
-          <button @click="saveUserName(displayUsers)">変更</button>
+        <ProfileModify></ProfileModify>
+      </div>
 
-          <h3>メールアドレス</h3>
-          <h4>{{displayUsers.email}}</h4>
-          <input type="text" :value="displayUsers.email" @input="emailModify" />
-          <button @click="saveEmail()">変更</button>
-          <button @click="cancel()">キャンセル</button>
+      <div class="movie_history">
+        <h1 class="movie_history_title">投稿履歴</h1>
+        <div class="childItems" v-for="item in allHistoryMovie" :key="item.snippet.title">
+          <div class="history_cards">
+            <img class="thumbnails" v-bind:src="item.snippet.thumbnails.medium.url" />
+            <h2>{{item.snippet.title}}</h2>
+          </div>
+          <button @click="deleteBtn(item)">削除</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
-
 <script>
-import firebase from "firebase";
+import ProfileModify from "../components/ProfileModify";
+import Header from "../components/HeaderSignIn";
 import "firebase/auth";
 import "firebase/firestore";
-// import Header from "../components/HeaderSignIn";
+import { firebaseApp } from "../main";
+import * as firebase from "firebase/app";
+
 export default {
-  // components: { Header },
+  components: { Header, ProfileModify },
   data() {
     return {
-      currentUserReference: [],
-      currentUsers: [],
-      dbUsers: [],
-      currentUserInformation: true,
-      editProfile: false,
-      updateUserName: "",
-      db: [],
-      usersRef: [],
-      newMail: "",
-      displayUsers: []
+      allHistoryMovie: []
     };
   },
-created() {
-    this.$nextTick(function () {
+ created() {
+    this.$nextTick(function() {
       const self = this;
-      const copyUsre = firebase.auth().currentUser;
-      //ログインユーザーを参照
-      firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-          self.currentUserReference = user;
-          self.dbUsers = self.usersRef.where(
-            "uid",
-            "==",
-            copyUsre.uid
-          );
-      
-          self.dbUsers.get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              self.displayUsers = doc.data();
-            });
+      firebaseApp
+        .firestore()
+        .collection("shares")
+        .onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            self.allHistoryMovie.push(doc.data());
           });
-        } else {
-          console.log("ログインユーザーを参照できていません");
-        }
-           //データベースに保管されているユーザー
-        self.db = firebase.firestore();
-        self.usersRef = self.db.collection("users");
-        self.usersRef.onSnapshot((snapshot) => {
-        snapshot.docs.forEach(() => {
-            if (user) {
-              self.dbUsers = self.usersRef.where(
-                "uid",
-                "==",
-                copyUsre.uid
-              );
-              self.dbUsers.get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                  self.displayUsers = doc.data();
-                });
-              });
-            }
-          });
+          console.log("query",self.allHistoryMovie);
         });
-      });
     });
   },
   methods: {
-    profilelModify() {
-      this.currentUserInformation = false;
-      this.editProfile = true;
-    },
-    cancel() {
-      this.editProfile = false;
-      this.currentUserInformation = true;
-    },
+    deleteBtn(value) {
+       firebase
+        .firestore()
+        .collection("shares")
+        .doc(value.snippet.movieId)
+        .delete()
+        .then(() => {
+          console.log("履歴",this.allHistoryMovie);
 
-    //変更されたユーザー名を取得
-    userNameModify(e) {
-      // console.log(e.target.value);
-      this.userName = e.target.value;
-    },
-    //Firestoreのユーザー名を変更
-    saveUserName(displayUsers) {
-      if (this.userName) {
-        this.usersRef
-          .doc(displayUsers.uid)
-          .update({ username: this.userName })
-          .then(() => {
-            firebase
-              .auth()
-              .currentUser.updateProfile({
-                displayName: this.userName
-              })
-              .then(function() {
-                console.log("現在のユーザー情報", firebase.auth().currentUser);
-              })
-              .catch(function() {
-                // An error happened.
-              });
-          })
-          .catch(error => {
-            console.error("Error edit user: ", error);
-          });
-
-        // this.$router.go({path: this.$router.push("/profile"), force: true}
-        // this.currentUserReference = firebase.auth().currentUser;
-        this.cancel();
-      } else {
-        alert("変更が確認されません");
-      }
-    },
-
-    //変更されたメールアドレスを取得
-    emailModify(e) {
-      console.log(e.target.value);
-      this.newMail = e.target.value;
-    },
-    //firebaseのメールを更新
-    saveEmail() {
-      const user = firebase.auth().currentUser;
-      user
-        .updateEmail(this.newMail)
-        .then(function() {
-          // Update successful.
-          console.log("seikou");
         })
-        .catch(function() {
-          // An error happened.
+        .catch(error => {
+          console.error("Error removing document: ", error);
         });
     }
   }
@@ -170,11 +69,35 @@ created() {
 </script>
 
 <style scoped>
-.profile_modifies {
+.profile {
   margin: 3em 3em;
-  font-size: 2em;
   padding: 2em 1em;
   box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2);
   border: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+h2 {
+  padding: 1em;
+}
+.movie_history_title {
+  font-size: 4em;
+  text-align: center;
+}
+
+.profile_modify {
+  width: 50%;
+}
+.movie_history {
+  width: 50%;
+}
+
+.childItems {
+  width: 70%;
+  box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid #eee;
+  font-size: 1.2em;
+  margin: 0 auto;
+  margin-bottom: 3em;
 }
 </style>
