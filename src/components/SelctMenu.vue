@@ -7,19 +7,19 @@
       </div>
     </div>
     <!-- タブメニュークリック時にクリックされたvalueを渡す -->
-    <Contents :value= clicked></Contents>
+    <Contents :value="clicked"></Contents>
   </div>
 </template>
 <script>
-import Contents from '../components/Contents'
+import Contents from "../components/Contents";
 export default {
-  components: {Contents},
+  components: { Contents },
   data() {
     return {
-        // タブメニューの初期値
+      // タブメニューの初期値
       isActive: "JavascriptValue",
-       // タブコンテンツの初期値
-      clicked:"JavascriptValue",
+      // タブコンテンツの初期値
+      clicked: "JavascriptValue",
       items: [
         { menu: "Javascript", value: "JavascriptValue", name: "JavascriptTab" },
         { menu: "Vue.js", value: "VueValue", name: "VueTab" },
@@ -27,7 +27,7 @@ export default {
         { menu: "Angular", value: "AngularValue", name: "AngularTab" },
         { menu: "Node.js", value: "NodeValue", name: "NodeTab" },
         { menu: "Other", value: "OtherValue", name: "OtherTab" }
-      ],
+      ]
     };
   },
   methods: {
@@ -53,7 +53,7 @@ export default {
   cursor: pointer;
   padding: 1rem 5rem;
   font-family: "Gabriola", "Skia-Regular_Condensed", "Noteworthy", sans-serif;
-  transition: all .6s 0s ease;
+  transition: all 0.6s 0s ease;
 }
 .tabMenues {
   display: flex;
@@ -65,27 +65,27 @@ export default {
 }
 .tabs:nth-child(1) input:checked + label,
 .tabs:nth-child(1) label:hover {
-    background: rgb(250, 253, 60);
+  background: rgb(250, 253, 60);
 }
 .tabs:nth-child(2) input:checked + label,
 .tabs:nth-child(2) label:hover {
-    background: rgb(116, 255, 60);
+  background: rgb(116, 255, 60);
 }
 .tabs:nth-child(3) input:checked + label,
 .tabs:nth-child(3) label:hover {
-    background: rgb(60, 226, 255);
+  background: rgb(60, 226, 255);
 }
 .tabs:nth-child(4) input:checked + label,
 .tabs:nth-child(4) label:hover {
-   background: rgb(253, 60, 60);
+  background: rgb(253, 60, 60);
 }
 .tabs:nth-child(5) input:checked + label,
 .tabs:nth-child(5) label:hover {
-   background: rgb(60, 253, 108);
-   transition: all .5s 0s ease;
+  background: rgb(60, 253, 108);
+  transition: all 0.5s 0s ease;
 }
 .tabs:nth-child(6) input:checked + label,
 .tabs:nth-child(6) label:hover {
-   background: rgb(182, 182, 182);
+  background: rgb(182, 182, 182);
 }
 </style>

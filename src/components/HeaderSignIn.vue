@@ -81,10 +81,16 @@ li {
   padding: 1rem;
 }
 .signoutbutton {
-  color: rgb(97, 97, 97);
+  color: blue;
   border: none; /* 枠線を消す */
   outline: none; /* クリックしたときに表示される枠線を消す */
   background: transparent;
+  text-shadow: 2px 2px 3px #acabab;
+}
+
+a {
+  color: blue;
+  text-shadow: 2px 2px 3px #acabab;
 }
 
 a:hover,

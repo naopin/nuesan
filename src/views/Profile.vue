@@ -13,7 +13,7 @@
             <img class="thumbnails" v-bind:src="item.snippet.thumbnails.medium.url" />
             <h2>{{item.snippet.title}}</h2>
           </div>
-          <button @click="deleteBtn(item)">削除</button>
+          <button class="delete_btn" @click="deleteBtn(item)">削除</button>
         </div>
       </div>
     </div>
@@ -35,30 +35,43 @@ export default {
       allHistoryMovie: []
     };
   },
- created() {
+
+  created() {
     this.$nextTick(function() {
       const self = this;
-      firebaseApp
-        .firestore()
-        .collection("shares")
-        .onSnapshot(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            self.allHistoryMovie.push(doc.data());
-          });
-          console.log("query",self.allHistoryMovie);
-        });
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          firebaseApp
+            .firestore()
+            .collection("shares")
+            //firestoreのすべてdoc取得
+            .onSnapshot(querySnapshot => {
+              let videos = [];
+              querySnapshot.forEach(doc => {
+                videos.push(doc.data());
+              });
+              let filterUid = [];
+              //ログインユーザーの投稿のみ(doc)取得
+              filterUid = videos.filter(item => {
+                return item.userId === user.uid;
+              });
+              self.allHistoryMovie = filterUid;
+            });
+        } else {
+          self.$router.push("/");
+        }
+      });
     });
   },
   methods: {
     deleteBtn(value) {
-       firebase
+      firebase
         .firestore()
         .collection("shares")
         .doc(value.snippet.movieId)
         .delete()
         .then(() => {
-          console.log("履歴",this.allHistoryMovie);
-
+          console.log("履歴", this.allHistoryMovie);
         })
         .catch(error => {
           console.error("Error removing document: ", error);
@@ -70,7 +83,7 @@ export default {
 
 <style scoped>
 .profile {
-  margin: 3em 3em;
+  margin: 2em 2em;
   padding: 2em 1em;
   box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2);
   border: 1px solid #eee;
@@ -99,5 +112,31 @@ h2 {
   font-size: 1.2em;
   margin: 0 auto;
   margin-bottom: 3em;
+}
+
+.delete_btn {
+  color: #eee;
+  background: rgb(255, 13, 13);
+  padding: 0.5em 1em;
+  font-size: 1.3em;
+  font-weight: bold;
+  border-radius: 6px;
+  border-bottom: solid 4px #6b6b6b;
+  margin: 0.5em;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+}
+.delete_btn:hover {
+  background: rgb(255, 103, 103);
+}
+
+.delete_btn:active {
+  -webkit-transform: translateY(3px);
+  transform: translateY(3px); /*下に動く*/
+  border-bottom: none; /*線を消す*/
 }
 </style>

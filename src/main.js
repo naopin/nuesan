@@ -8,6 +8,8 @@ import 'firebase/analytics';
 import 'firebase/auth'
 // axios
 import axios from 'axios'    
+//pagenation
+
 
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;

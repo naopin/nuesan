@@ -19,11 +19,28 @@
         <label for="articleSearch">記事</label>
       </div>
     </form>
+    <div  class="paginate">
+  <paginate
+  :pageCount="10"
+  :containerClass="'pagination'"
+  :page-class="'page-item'"
+  :page-link-class="'page-link'"
+  :prev-class="'page-item'"
+  :prev-link-class="'page-link'"
+  :next-class="'page-item'"
+  :next-link-class="'page-link'"
+  :clickHandler="clickCallback">
+</paginate>
+
+    </div>
+
   </div>
 </template>
 
 <script>
+import Paginate from "vuejs-paginate";
 export default {
+    components: {Paginate },
   data() {
     return {
       keyword: ""
@@ -48,5 +65,10 @@ form {
 }
 .radio {
   text-align: left;
+}
+
+.paginate {
+  font-size: 1.5em;
+ color: crimson;
 }
 </style>

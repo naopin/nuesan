@@ -11,11 +11,15 @@
               <iframe width="100%" height="100%" :src="jsIframe"></iframe>
             </div>
           </MyModal>
+
           <div class="parentItems">
             <div class="childItems" v-for="item in jsMapitems" :key="item.url">
               <div @click="javascriptOpenModal(), clickJsItem(item)">
                 <img v-bind:src="item.thumbnail" />
                 <h2>{{item.title}}</h2>
+                <div class="username">
+                  <p>投稿者:{{item.userName}}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -43,7 +47,7 @@
       <!-- React -->
       <transition name="fade">
         <div v-if="value == 'ReacValue'">
-            <MyModal @close="reactCloseModal()" v-if="reactModal">
+          <MyModal @close="reactCloseModal()" v-if="reactModal">
             <div class="frames">
               <iframe width="100%" height="100%" :src="reactIframe"></iframe>
             </div>
@@ -61,7 +65,7 @@
       <!-- Angular -->
       <transition name="fade">
         <div v-if="value == 'AngularValue'">
-       <MyModal @close="angularCloseModal()" v-if="angularModal">
+          <MyModal @close="angularCloseModal()" v-if="angularModal">
             <div class="frames">
               <iframe width="100%" height="100%" :src="angularIframe"></iframe>
             </div>
@@ -122,6 +126,7 @@ import "firebase/firestore";
 import { firebaseApp } from "../main";
 import MyModal from "../components/Mymodal";
 import Search from "../components/Search";
+
 export default {
   components: { MyModal, Search },
   props: ["value"],
@@ -129,12 +134,12 @@ export default {
     return {
       videoItems: [],
       jsMapitems: "",
-      vueMapitems:"",
-      reactMapitems:"",
-      angularMapitems:"",
-      nodeMapitems:"",
-      otherMapitems:"",
-     //category別Modal
+      vueMapitems: "",
+      reactMapitems: "",
+      angularMapitems: "",
+      nodeMapitems: "",
+      otherMapitems: "",
+      //category別Modal
       jsModal: false,
       vueModal: false,
       reactModal: false,
@@ -142,19 +147,19 @@ export default {
       nodeModal: false,
       otherModal: false,
       //category別の動画
-      javascriptItems:[],
-      vueItems:[],
-      reactItems:[],
-      angularItems:[],
-      nodeItems:[],
-      otherItems:[],
+      javascriptItems: [],
+      vueItems: [],
+      reactItems: [],
+      angularItems: [],
+      nodeItems: [],
+      otherItems: [],
       //category別Iframe
       jsIframe: "",
       vueIframe: "",
       reactIframe: "",
       angularIframe: "",
       nodeIframe: "",
-      otherIframe: "",
+      otherIframe: ""
     };
   },
   created() {
@@ -176,7 +181,7 @@ export default {
           self.vueItems = self.videoItems.filter(item => {
             return item.category === "Vue.js";
           });
-              //CategoryがReactの動画を取得
+          //CategoryがReactの動画を取得
           self.reactItems = self.videoItems.filter(item => {
             return item.category === "React";
           });
@@ -194,10 +199,11 @@ export default {
           });
           // Javascript初期値フレーム
           self.jsIframe = self.javascriptItems[0].snippet.url;
-          
+
           //jsMap
           self.jsMapitems = self.javascriptItems.map(elm => {
             return {
+              userName: elm.userName,
               url: elm.snippet.url,
               title: elm.snippet.title,
               description: elm.snippet.description,
@@ -328,8 +334,7 @@ export default {
     },
     otherCloseModal() {
       this.otherModal = false;
-    },
-
+    }
   }
 };
 </script>
@@ -344,8 +349,17 @@ export default {
 }
 
 h2 {
-  padding: 1em;
+  padding: 0.5em 1em 4.5em 1em;
 }
+
+.username {
+  font-size: 1.5em;
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  margin-left: 0.5em;
+}
+
 .frames {
   width: 90em;
   height: 50em;
@@ -361,6 +375,7 @@ h2 {
   margin-bottom: 2em;
   box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2);
   border: 1px solid #eee;
+  position: relative;
 }
 .fade-enter {
   transform: translate(-350px, 0);

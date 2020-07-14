@@ -6,7 +6,7 @@
     <div v-if="navbar">
       <HeaderSignIn></HeaderSignIn>
     </div>
-    <SelctMenu></SelctMenu>
+      <SelctMenu></SelctMenu>
   </div>
 </template>
 
@@ -17,12 +17,13 @@ import HeaderSignIn from "@/components/HeaderSignIn.vue";
 import firebase from "firebase";
 import SelctMenu from "../components/SelctMenu"
 
+
 export default {
   components: { Header,  HeaderSignIn, SelctMenu},
   name: "Home",
   data() {
     return {
-      navbar: false
+      navbar: false,
     };
   },
   created() {
